@@ -5,7 +5,12 @@ var app = new Vue({
         neworiginaluser:"",
         newcontent:"",
         newstorageloc:"",
-        newlatestuser:""
+        newlatestuser:"",
+        selectedid:"",
+        selecteddocs:"",
+        modifiedid:"",
+        modifiedstorageloc:"",
+        modifiedlatestuser:""
     },
     
     methods: {
@@ -30,6 +35,7 @@ var app = new Vue({
             fetch('/addstoreditems', d)
             .then((e) => {
                 e.json().then((j) => {
+                  console.log(j);
                 this.qrcreation(j)
                 })
               }).then((k)=>{this.readall();
@@ -40,16 +46,56 @@ var app = new Vue({
             this.newcontent="";
             this.newstorageloc="";
             this.newlatestuser=""
+
         },
 
         qrcreation:function(i){
-            let idqr = "#qrcode-" + i.id + "-" +i.name;
+          console.log(i)
+            let idqr = i.id;
             console.log(idqr);
-            $(idqr).html("");
-            $(idqr).qrcode({ width: 90, height: 90, text: idqr})
+            $('#idqr').html("");
+            $('#idqr').qrcode({ width: 90, height: 90, text: idqr})
           },
 
-        readall: function() {
+
+        modify:function(){
+          // alert("Modify")
+          console.log("Modify")},
+
+             reviseItem:function(){
+      var self = this;
+      self.revisedTodos = self.todos.filter((v)=> {
+        return(v.revisedTodo!="");
+        });
+      Promise.all(
+          self.revisedTodos.map((v) => {
+            this.selectedrevise(v)
+          })).then((res) => this.readItem()
+      );
+    },
+
+    selectedmodify:function(v) {
+      const data ={
+        "id":this.modifiedid,
+        // "originaluser": this.originaluser,
+        // "content": this.content,
+        "storageloc": this.modifiedstorageloc,
+        "latestuser":this.modifiedlatestuser
+      };
+      const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      };
+      const d = {
+      headers: headers,
+      method: "PUT",
+      body: JSON.stringify(data) 
+      };
+      return fetch('/addstoreditem/'+v.id, d);
+    },
+
+        
+    readall: function() {
             const headers = {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -66,6 +112,25 @@ var app = new Vue({
             })
         },
 
+    selectdocs: function() {
+        const headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        };
+        const d = {
+           headers: headers,
+           method: "GET"
+        };
+        var self = this
+        console.log(this.selectedid);
+        fetch('/addstoreditems/:' + this.selectedid, d)
+        .then((d) => {
+           d.json().then((j) => {
+             console.log(j);
+             self.selecteddocs = j;
+           })
+          })
+      },
         // computed:{
         // autoreadall:function(){
         //     readall()

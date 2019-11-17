@@ -5,7 +5,30 @@ let db = require('../models/index')
 // REST controller definitions
 module.exports = {
     index: (req, res) => {
-        db.storeditem.findAll()            
+        db.storeditem.findAll({ include: [db.user]})            
+        .then((d) => {
+            let data = d.map((p) => {
+                console.log('----')
+                console.log(p)
+                  return {
+                    id: p.id,
+                    originaluser: p.originaluser,
+                    content: p.content,
+                    storageloc: p.storageloc,
+                    latestuser: p.latestuser
+                }
+            })
+            res.json(data)
+        })
+    },
+
+    show: (req, res) => {
+        console.log(req.params.id)
+        db.storeditem.findAll({
+            where:{
+                id: req.params.id
+            }
+        })            
         .then((d) => {
             let data = d.map((p) => {
                   return {
@@ -22,12 +45,14 @@ module.exports = {
 
     create: (req, res) => {
         let data = {
-          originaluser:req.body.originaluser,
-          content:req.body.content,
-          storageloc:req.body.storageloc,
-          latestuser:req.body.latestuser,
+          originaluser:Number(req.body.originaluser),
+          content:Number(req.body.content),
+          storageloc:Number(req.body.storageloc),
+          latestuser:Number(req.body.latestuser),
         }
+        console.log(data)
         db.storeditem.create(data).then((p)=>{
+            console.log(p)
           res.json({
               id: p.id,
               originaluser: p.originaluser,
@@ -37,6 +62,8 @@ module.exports = {
             })
         })
     },
+
+
 
     // update: (req, res) => {
     //     db.vuetodotable.update({

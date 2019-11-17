@@ -27,19 +27,6 @@ app.use(express.json())
 app.resource('addstoreditems', require('./controllers/addstoreditem'), {id: 'id'})
 // app.resource('users', require('./controllers/user'), {id: 'id'})
 
-// let isLogin = (req, res, next) => {
-//     // console.log(">>"+req.cookies.login)
-//     if(req.cookies.login == 'true') {
-//         next();  // これによりapp.use isLoginのあとのexpress.static( path.join( __dirname, '/private' )) に移る。
-//     } else {
-//     //windows.alert("NameないしPasswordが異なっています")//→alert使えない。なぜ？？？？
-//     // redirectはサーバーサイド、main.jsのlocation.hrefはブラウザサイド 
-//         res.redirect('/login.html')
-//     }
-// }
-
-// app.use('/secure', isLogin, express.static(path.join(__dirname,'/private')));
-// app.use('/secureloggedin', express.static(path.join(__dirname,'/private')));
 app.use(express.static('public'));
 
 app.listen(3050)
